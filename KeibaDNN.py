@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[31]:
+# In[2]:
 
 
 # 必要なインポートを実施
@@ -42,7 +42,7 @@ hors_page_link_list = horse_page_link(HOME_URL + 'race_info/2018082321060403.do'
 print(len(hors_page_link_list))
 
 
-# In[4]:
+# In[25]:
 
 
 # HTMLのタグを排除する正規表現
@@ -63,12 +63,12 @@ def horse_data(url):
     # 過去のレースデータ
     pre_race_data = get_previous_race_row(soup)
     df = pd.DataFrame(pre_race_data)[1:][[2,3,10,11,13,14,15,19,23]].dropna().rename(columns={
-        2:'date', 3:'place', 10:'len', 11:'wether', 13:'popularity', 14:'rank', 15:'time',19:'weight',23:'money'})
+        2:'date', 3:'place', 10:'len', 11:'wether', 13:'rank', 14:'popularity', 15:'time',19:'weight',23:'money'})
     horse_name = soup.find('h2', id='tl-prof').get_text()
     return horse_name, df
 
 
-# In[35]:
+# In[27]:
 
 
 # 馬場状態のカラム内容を文字列によって変更する
@@ -114,10 +114,10 @@ def add_race_data(df):
         row = add_wether_columns(row)
 
         row['money']=int(row['money'].replace(',','')) 
-        row['horse_cnt'] = int(row['rank'].split('/')[1])
-        row['result_rank'] = int(row['rank'].split('/')[0])
+        row['horse_cnt'] = int(row['popularity'].split('/')[1])
+        row['result_rank'] = int(row['popularity'].split('/')[0])
         row['len'] = int(row['len'][0:4])
-        row['popularity'] = int(row['popularity'])
+        row['popularity'] = int(row['rank'])
         row['weight'] = int(row['weight'])
 
         # 　競馬場の一致
@@ -140,14 +140,13 @@ df_list = []
 # 取得した出走馬の過去レースをデータフレームに格納
 for url_link in hors_page_link_list:
     name, df = horse_data(url_link)
-    print(name)
     df = add_race_data(df)
     display(df)
     df_list.append(df)
     
 
 
-# In[20]:
+# In[15]:
 
 
 # 該当のレース結果データを取得
@@ -179,7 +178,7 @@ print(c)
 # df = add_race_data(df)
 
 
-# In[21]:
+# In[16]:
 
 
 def add_grade(df):
@@ -190,12 +189,13 @@ def add_grade(df):
         row = add_wether_columns(row)
         horse_cnt = row['popularity'].split('/')[0]
         popularity = row['popularity'].split('/')[1]
+        # 出走頭数 + ランク()
         row['grade'] = int(horse_cnt) - (int(row['rank']) - 1) + int(popularity)/4 + int(row[TODAY_WETHER]) * 1
         df_grade = df_grade.append(row, ignore_index=True)
     return df_grade
 
 
-# In[23]:
+# In[29]:
 
 
 def horse_index(url):
@@ -208,7 +208,7 @@ def horse_index(url):
     return horse_name, df['grade'].mean()
 
 
-# In[24]:
+# In[30]:
 
 
 def ture_data(url):
@@ -216,7 +216,7 @@ def ture_data(url):
     return p.sub("", str(soup.find_all('tr', class_='bg-1chaku')[0]).split('</td>')[3]).replace('\n','')
 
 
-# In[30]:
+# In[31]:
 
 
 def main(race_url):
@@ -226,7 +226,7 @@ def main(race_url):
         print(horse_name+ ':  ' + str(grade))
 
 
-# In[34]:
+# In[32]:
 
 
 def pre_race_analysis(race_page):
@@ -249,10 +249,10 @@ def pre_race_analysis(race_page):
     print('-------------------------------------')
 
 
-# In[36]:
+# In[34]:
 
 
 TODAY_WETHER = 'rainny'
 race_page ='https://www.nankankeiba.com/race_info/2018052320040310.do'
-main(race_page)
+pre_race_analysis(race_page)
 
