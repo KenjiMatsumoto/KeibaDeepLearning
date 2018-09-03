@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 # -*- coding: utf-8 -*- 
@@ -14,6 +14,10 @@ from bs4 import BeautifulSoup
 import pandas
 import re
 
+
+# In[ ]:
+
+
 # 注意
 # 1. ジャパンカップの日と有馬記念の日は11レースまでしか
 # ないので、適当にスクリプトを書き換えて実行してください。
@@ -22,7 +26,7 @@ import re
 # 3. 新馬戦の馬体重増減は「, - ,」となっているので、
 # 「スペース、ハイフン、スペース」を除去してください。
 
-for month in range(1,13):
+for month in range(1):
         cal_html=urllib.request.urlopen("http://keiba.yahoo.co.jp/schedule/list/2016/?month="+str(month))
         cal_soup = BeautifulSoup(cal_html,"lxml")
         
